@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Date, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from .connect import Base, engine
@@ -24,6 +24,7 @@ class User(Base):
     password = Column(String)
     created_at = Column(DateTime, default = datetime.now())
     avatar = Column(String(255), nullable=True)
+    confirmed = Column(Boolean, default=False)
 
     contacts = relationship("Contact", back_populates="user")
 
