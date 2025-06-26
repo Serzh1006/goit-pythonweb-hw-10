@@ -8,8 +8,9 @@ from src.schemas.contact import (
     ContactDeleted,
 )
 from src.databases.connect import get_db
+from src.auth.auth import get_current_user
 
-router = APIRouter(prefix="/contacts", tags=["contacts"])
+router = APIRouter(prefix="/contacts", tags=["contacts"], dependencies=[Depends(get_current_user)])
 
 
 @router.post(

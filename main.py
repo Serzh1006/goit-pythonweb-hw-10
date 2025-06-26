@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from sqlalchemy import text
 from src.databases.connect import get_db
-from src.routes import contacts
+from src.routes import contacts, auth
 
 app = FastAPI()
 
@@ -27,3 +27,8 @@ def get_health_status(db=Depends(get_db)):
 
 
 app.include_router(contacts.router)
+app.include_router(auth.router)
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

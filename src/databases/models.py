@@ -1,4 +1,6 @@
-from sqlalchemy import Column, Integer, String, Date
+from sqlalchemy import Column, Integer, String, DateTime, Date, ForeignKey
+from sqlalchemy.orm import relationship
+from datetime import datetime
 from .connect import Base, engine
 
 
@@ -10,6 +12,20 @@ class Contact(Base):
     email = Column(String(100), nullable=False, unique=True)
     phone_number = Column(String(20), nullable=False)
     birthday = Column(Date, nullable=True)
+
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("User", back_populates="contacts")
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    username = Column(String, unique=True)
+    email = Column(String, unique=True)
+    password = Column(String)
+    created_at = Column(DateTime, default = datetime.now())
+    avatar = Column(String(255), nullable=True)
+    contacts = relationship("Contact", back_populates="users")
+
 
 
 Base.metadata.create_all(bind=engine)
