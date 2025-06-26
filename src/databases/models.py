@@ -24,7 +24,8 @@ class User(Base):
     password = Column(String)
     created_at = Column(DateTime, default = datetime.now())
     avatar = Column(String(255), nullable=True)
-    contacts = relationship("Contact", back_populates="users")
+
+    contacts = relationship("Contact", back_populates="user")
 
 
 

@@ -1,25 +1,25 @@
-from src.databases.models import Contact
+from src.databases.models import Contact, User
 from datetime import datetime, timedelta
 
 
-async def create_contact(contact, db):
-    new_contact = Contact(**contact.model_dump())
+async def create_contact(contact, current_user: User, db):
+    new_contact = Contact(**contact.model_dump(), user_id=current_user.id)
     db.add(new_contact)
     db.commit()
     db.refresh(new_contact)
     return new_contact
 
 
-async def get_contacts(db):
-    return db.query(Contact).all()
+async def get_contacts(current_user: User, db):
+    return db.query(Contact).filter(Contact.user_id == current_user.id).all()
 
 
-async def get_contact_by_ID(contact_id, db):
-    return db.query(Contact).filter(Contact.id == contact_id).first()
+async def get_contact_by_ID(contact_id: int, current_user: User, db):
+    return db.query(Contact).filter(Contact.id == contact_id, Contact.user_id == current_user.id).first()
 
 
-async def update_contact(contact_data, contact_id, db):
-    contact = await get_contact_by_ID(contact_id, db)
+async def update_contact(contact_data, contact_id: int, current_user: User, db):
+    contact = await get_contact_by_ID(contact_id, current_user, db)
     if contact:
         for key, value in contact_data.dict().items():
             setattr(contact, key, value)
@@ -28,17 +28,16 @@ async def update_contact(contact_data, contact_id, db):
     return contact
 
 
-async def delete_contact(contact_id, db):
-    contact = await get_contact_by_ID(contact_id, db)
+async def delete_contact(contact_id: int, current_user: User, db):
+    contact = await get_contact_by_ID(contact_id, current_user, db)
     if contact:
         db.delete(contact)
         db.commit()
     return contact
 
 
-def find_search(first_name, last_name, email, db):
-    print(first_name, last_name, email, db)
-    query = db.query(Contact)
+def find_search(first_name, last_name, email, current_user: User, db):
+    query = db.query(Contact).filter(Contact.user_id == current_user.id)
     if first_name:
         query = query.filter(Contact.first_name.ilike(f"%{first_name}%"))
     if last_name:
@@ -48,10 +47,10 @@ def find_search(first_name, last_name, email, db):
     return query.all()
 
 
-async def contacts_birthday(db):
+async def contacts_birthday(current_user: User, db):
     today = datetime.today().date()
     next_week = today + timedelta(days=7)
-    contacts = db.query(Contact).all()
+    contacts = db.query(Contact).filter(Contact.user_id == current_user.id).all()
     upcoming = []
 
     for contact in contacts:

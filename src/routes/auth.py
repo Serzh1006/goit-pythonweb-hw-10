@@ -19,7 +19,7 @@ async def register(user: UserCreate, db = Depends(get_db)):
     return {"Email": new_user.email, "access_token": token}
 
 
-@router.post("/login", status_code = status.HTTP_200_OK)
+@router.post("/login", status_code = status.HTTP_201_CREATED)
 async def login(user: UserLogin, db = Depends(get_db)):
     user_in_db = await authenticate_user(user.email, user.password, db)
     if not user_in_db:

@@ -4,7 +4,7 @@ hasher = Hash()
 
 
 async def create_user(user_data, db):
-    user = User(email=user_data.email, password=hasher.get_password_hash(user_data.password))
+    user = User(username = user_data.username, email=user_data.email, password=hasher.get_password_hash(user_data.password), avatar=None)
     db.add(user)
     db.commit()
     db.refresh(user)
